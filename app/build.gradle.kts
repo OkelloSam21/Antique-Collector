@@ -59,6 +59,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    //datastore
+    implementation(libs.androidx.datastore.preferences)
+
     //splash
     implementation(libs.androidx.core.splashscreen)
 

@@ -7,4 +7,21 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Primary app colors -->
+    <color name="primary_brown">#8C613C</color>
+    <color name="primary_brown_light">#A67C52</color>
+    <color name="primary_brown_lighter">#C69C6D</color>
+    <color name="primary_brown_lightest">#D8B88E</color>
+
+    <!-- Background colors -->
+    <color name="background_cream">#F0E6D2</color>
+    <color name="background_light">#FAF6F0</color>
+
+    <!-- Accent colors -->
+    <color name="accent_gold">#D4AF37</color>
+    <color name="accent_red">#8B4513</color>
+
+    <!-- Splash screen colors -->
+    <color name="splash_background">#8C613C</color>
 </resources>
