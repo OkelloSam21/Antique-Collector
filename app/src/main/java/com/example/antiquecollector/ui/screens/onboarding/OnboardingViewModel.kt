@@ -38,13 +38,17 @@ class OnboardingViewModel @Inject constructor(
     }
 
     fun goToNextPage() {
-        _currentPage.value = _currentPage.value + 1
+        _currentPage.value += 1
     }
 
     fun goToPreviousPage() {
         if (_currentPage.value > 0) {
-            _currentPage.value = _currentPage.value - 1
+            _currentPage.value -= 1
         }
+    }
+
+    fun setCurrentPage(page: Int) {
+        _currentPage.value = page
     }
 
     fun completeOnboarding() {
