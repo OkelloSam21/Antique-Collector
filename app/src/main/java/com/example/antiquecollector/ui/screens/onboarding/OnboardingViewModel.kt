@@ -33,7 +33,7 @@ class OnboardingViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            _hasCompletedOnboarding.value = onboardingPreferences.hasCompletedOnboarding()
+            _hasCompletedOnboarding.value = onboardingPreferences.onboardingCompleteFlow.value
         }
     }
 
@@ -53,14 +53,18 @@ class OnboardingViewModel @Inject constructor(
 
     fun completeOnboarding() {
         viewModelScope.launch {
-            onboardingPreferences.setOnboardingCompleted()
+            onboardingPreferences.setOnboardingCompleted(
+                completed = true
+            )
             _hasCompletedOnboarding.value = true
         }
     }
 
     fun skipOnboarding() {
         viewModelScope.launch {
-            onboardingPreferences.setOnboardingCompleted()
+            onboardingPreferences.setOnboardingCompleted(
+                completed = true
+            )
             _hasCompletedOnboarding.value = true
         }
     }

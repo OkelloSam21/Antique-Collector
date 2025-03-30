@@ -53,9 +53,8 @@ fun OnboardingScreen(
     onOnboardingComplete: () -> Unit,
     viewModel: OnboardingViewModel = hiltViewModel()
 ) {
-    val currentPage by viewModel.currentPage.collectAsStateWithLifecycle()
     val hasCompletedOnboarding by viewModel.hasCompletedOnboarding.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
+    rememberCoroutineScope()
 
     if (hasCompletedOnboarding) {
         onOnboardingComplete()

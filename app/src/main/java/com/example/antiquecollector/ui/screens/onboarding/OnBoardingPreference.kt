@@ -1,56 +1,33 @@
+// OnboardingPreferences.kt (refactored)
 package com.example.antiquecollector.ui.screens.onboarding
 
-import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.preferencesDataStore
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import com.example.antiquecollector.di.ApplicationScope
+import com.example.antiquecollector.util.PreferencesManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "antique_collector_preferences")
-
-/**
- * Class for managing onboarding preferences
- */
 @Singleton
 class OnboardingPreferences @Inject constructor(
-    @ApplicationContext private val context: Context
+    private val preferencesManager: PreferencesManager,
+    @ApplicationScope private val coroutineScope: CoroutineScope // Inject a CoroutineScope
 ) {
-    private val dataStore = context.dataStore
+    private val hasCompletedOnboardingKey = booleanPreferencesKey("has_completed_onboarding")
 
-    private object PreferencesKeys {
-        val HAS_COMPLETED_ONBOARDING = booleanPreferencesKey("has_completed_onboarding")
-    }
+    val onboardingCompleteFlow: StateFlow<Boolean> = preferencesManager.getPreference<Boolean>( // Explicitly specify Boolean
+        hasCompletedOnboardingKey,
+        false
+    ).stateIn(
+        scope = coroutineScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = false
+    )
 
-    /**
-     * Check if user has completed onboarding
-     */
-    suspend fun hasCompletedOnboarding(): Boolean {
-        return dataStore.data.map { preferences ->
-            preferences[PreferencesKeys.HAS_COMPLETED_ONBOARDING] ?: false
-        }.first()
-    }
-
-    /**
-     * Mark onboarding as completed
-     */
-    suspend fun setOnboardingCompleted() {
-        dataStore.edit { preferences ->
-            preferences[PreferencesKeys.HAS_COMPLETED_ONBOARDING] = true
-        }
-    }
-
-    /**
-     * Reset onboarding status (for testing purposes)
-     */
-    suspend fun resetOnboardingStatus() {
-        dataStore.edit { preferences ->
-            preferences[PreferencesKeys.HAS_COMPLETED_ONBOARDING] = false
-        }
+    suspend fun setOnboardingCompleted(completed: Boolean) {
+        preferencesManager.setPreference(hasCompletedOnboardingKey, completed)
     }
 }
