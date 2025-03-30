@@ -50,6 +50,7 @@ fun HomeScreen(
     onNavigateToExplore: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onSearchClick: () -> Unit,
+    onNavigateToAddItem: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
     currencyFormatter: CurrencyFormatter = CurrencyFormatter(),
     dateUtils: DateUtils = DateUtils()
@@ -93,7 +94,7 @@ fun HomeScreen(
                 )
                 NavigationBarItem(
                     selected = false,
-                    onClick = { /* Excluded */ },
+                    onClick = onNavigateToSettings,
                     icon = { Icon(painterResource(id = R.drawable.ic_settings), contentDescription = "Settings") },
                     label = { Text("Settings") }
                 )
@@ -116,6 +117,7 @@ fun HomeScreen(
                 onAntiqueClick = onNavigateToDetail,
                 onCategoryClick = onNavigateToCategory,
                 onSearchClick = onSearchClick,
+                onAddItemClick = onNavigateToAddItem,
                 currencyFormatter = currencyFormatter,
                 dateUtils = dateUtils
             )
@@ -130,6 +132,7 @@ private fun CollectionContent(
     onAntiqueClick: (Long) -> Unit,
     onCategoryClick: (Long) -> Unit,
     onSearchClick: () -> Unit,
+    onAddItemClick: () -> Unit,
     currencyFormatter: CurrencyFormatter,
     dateUtils: DateUtils
 ) {
@@ -266,7 +269,7 @@ private fun CollectionContent(
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             FloatingActionButton(
-                onClick = { /* Add Item */ },
+                onClick = onAddItemClick,
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = Color.White
             ) {
@@ -432,6 +435,7 @@ fun HomePreview(modifier: Modifier = Modifier) {
             onNavigateToExplore = {},
             onNavigateToSettings = {},
             onSearchClick = {},
+            onNavigateToAddItem = {},
             currencyFormatter = CurrencyFormatter(),
             dateUtils = DateUtils()
         )

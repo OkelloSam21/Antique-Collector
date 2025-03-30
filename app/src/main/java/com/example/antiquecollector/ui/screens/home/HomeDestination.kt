@@ -16,6 +16,7 @@ fun NavGraphBuilder.homeScreen(
     onNavigateToExplore: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onSearchClick: () -> Unit,
+    onNavigateToAddItem: () -> Unit,
     currencyFormatter: CurrencyFormatter,
     dateUtils: DateUtils,
 ) {
@@ -28,6 +29,7 @@ fun NavGraphBuilder.homeScreen(
             onNavigateToExplore = onNavigateToExplore,
             onNavigateToSettings = onNavigateToSettings,
             onSearchClick = onSearchClick,
+            onNavigateToAddItem = onNavigateToAddItem,
             //  viewModel = hiltViewModel(), // Directly get ViewModel here
             currencyFormatter = currencyFormatter,
             dateUtils = dateUtils,
