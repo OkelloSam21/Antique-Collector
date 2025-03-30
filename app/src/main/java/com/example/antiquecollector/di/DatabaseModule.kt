@@ -10,20 +10,37 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
+    @Singleton
+    @Provides
+    fun provideCallBack(@ApplicationScope scope: CoroutineScope): AppDatabase.Callback{
+        return  AppDatabase.Callback(scope)
+    }
+
     @Provides
     @Singleton
-    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
-        return Room.databaseBuilder(
+    fun provideAppDatabase(
+        @ApplicationContext context: Context,
+        callback: AppDatabase.Callback
+    ): AppDatabase {
+        val db = Room.databaseBuilder(
             context,
             AppDatabase::class.java,
             "antique_collector_database"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .addCallback(callback)
+            .build()
+
+        callback.setDatabase(db)
+
+        return db
     }
 
     @Provides
