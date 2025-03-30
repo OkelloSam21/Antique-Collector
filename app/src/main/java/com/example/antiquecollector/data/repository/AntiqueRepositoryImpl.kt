@@ -87,7 +87,7 @@ class AntiqueRepositoryImpl @Inject constructor(
     override fun getRecentAntiques(limit: Int): Flow<List<Antique>> {
         return antiqueDao.getRecentAntiques(limit).map { antiqueEntities ->
             antiqueEntities.map { antiqueEntity ->
-                // For recent antiques, we just need basic info without categories
+                // For recent antiques, we just need basic com.example.antiquecollector.ui.theme.helper.getInfo without categories
                 // This is more efficient than fetching the full relations
                 Antique(
                     id = antiqueEntity.id,
