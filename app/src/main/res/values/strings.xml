@@ -104,5 +104,6 @@
     <string name="notification_content_collection_review">It\'s time to review and update your antique collection.</string>
     <string name="notification_content_museum_event">There\'s a new exhibition that might interest you based on your collection.</string>
     <string name="my_collection">My collection</string>
+    <string name="description">description</string>
 
 </resources>
