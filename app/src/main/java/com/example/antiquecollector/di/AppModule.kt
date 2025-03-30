@@ -1,10 +1,12 @@
 package com.example.antiquecollector.di
 
 import android.content.Context
+import com.example.antiquecollector.ui.screens.onboarding.OnboardingPreferences
 import com.example.antiquecollector.util.CurrencyFormatter
 import com.example.antiquecollector.util.DateUtils
 import com.example.antiquecollector.util.ImageUtils
 import com.example.antiquecollector.util.NotificationUtils
+import com.example.antiquecollector.util.PreferencesManager
 import com.example.antiquecollector.util.ValidationUtils
 import dagger.Module
 import dagger.Provides
@@ -86,4 +88,20 @@ object AppModule {
     fun provideNotificationUtils(@ApplicationContext context: Context): NotificationUtils {
         return NotificationUtils(context)
     }
+
+    @Provides
+    @Singleton
+    fun providePreferencesManager(@ApplicationContext context: Context): PreferencesManager {
+        return PreferencesManager(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideOnboardingPreferences(
+        preferencesManager: PreferencesManager,
+        @ApplicationScope applicationScope: CoroutineScope
+    ): OnboardingPreferences {
+        return OnboardingPreferences(preferencesManager, applicationScope)
+    }
+
 }
