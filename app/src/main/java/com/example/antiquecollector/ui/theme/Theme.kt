@@ -1,67 +1,75 @@
 package com.example.antiquecollector.ui.theme
 
 import android.app.Activity
+import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import com.example.antiquecollector.ui.theme.atoms.getAntiqueScheme
+import com.example.antiquecollector.ui.theme.atoms.getColorScheme
+import com.example.antiquecollector.ui.theme.atoms.primaryDark
+import com.example.antiquecollector.ui.theme.atoms.primaryLight
 
-/**
- * Light color scheme for the Antique Collector app, using the warm brown palette
- * that matches the design mockups.
- */
-private val LightColorScheme = lightColorScheme(
-    primary = PrimaryBrown,
-    secondary = PrimaryBrownLight,
-    tertiary = AccentGold,
-    background = BackgroundLight,
-    surface = BackgroundCream,
-    onPrimary = BackgroundCream,
-    onSecondary = BackgroundCream,
-    onTertiary = BackgroundCream,
-    onBackground = TextDark,
-    onSurface = TextDark
+
+@Immutable
+data class ColorFamily(
+    val color: Color,
+    val onColor: Color,
+    val colorContainer: Color,
+    val onColorContainer: Color
 )
 
-/**
- * Dark color scheme for the Antique Collector app, using a darker version
- * of the warm brown palette.
- */
-private val DarkColorScheme = darkColorScheme(
-    primary = PrimaryBrownLight,
-    secondary = PrimaryBrownLighter,
-    tertiary = AccentGold,
-    background = TextDark,
-    surface = PrimaryBrown,
-    onPrimary = BackgroundCream,
-    onSecondary = BackgroundCream,
-    onTertiary = BackgroundCream,
-    onBackground = BackgroundCream,
-    onSurface = BackgroundCream
+val unspecified_scheme = ColorFamily(
+    Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified
 )
 
-/**
- * Theme for the Antique Collector app.
- * Uses the light or dark color scheme based on the system settings or user preference.
- */
 @Composable
 fun AntiqueCollectorTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
+    isDarkThemeEnabled: Boolean = isSystemInDarkTheme(),
+    // Dynamic color is available on Android 12+
+    dynamicColor: Boolean = true,
+    content: @Composable() () -> Unit
 ) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    val colorScheme = getColorScheme(darkTheme = isDarkThemeEnabled)
+    val appTheme = getAntiqueScheme(isDarkThemeEnabled)
     val view = LocalView.current
+    val context = LocalContext.current
+    // Get primary color for status bar based on dark/light theme
+    var statusBarColor = if (isDarkThemeEnabled) primaryDark else primaryLight
 
     if (!view.isInEditMode) {
         SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+            val window = (context as Activity).window
+            val insetsController = WindowCompat.getInsetsController(window, view)
+
+            // Configure the behavior of the status bar
+            insetsController.apply {
+                systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                // Set status bar color
+                window.statusBarColor = statusBarColor.toArgb()
+
+                // Set status bar appearance based on theme (light or dark icons)
+                isAppearanceLightStatusBars = !isDarkThemeEnabled
+            }
+
+            // Configure the behavior of the navigation bar (if needed and on supported API levels)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                insetsController.apply {
+                    // Set navigation bar color
+                    window.navigationBarColor = colorScheme.background.toArgb()
+
+                    // Set navigation bar appearance based on theme (light or dark icons)
+                    isAppearanceLightNavigationBars = !isDarkThemeEnabled
+                }
+            }
         }
     }
 

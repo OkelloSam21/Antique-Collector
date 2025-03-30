@@ -2,4 +2,10 @@
 <resources>
 
     <style name="Theme.AntiqueCollector" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.AntiqueCollector.Splash" parent="Theme.SplashScreen">
+        <item name="android:windowBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.AntiqueCollector</item>
+    </style>
 </resources>
