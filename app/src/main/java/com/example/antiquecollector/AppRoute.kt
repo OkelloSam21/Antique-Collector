@@ -7,6 +7,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.example.antiquecollector.ui.screens.additem.addItemScreen
+import com.example.antiquecollector.ui.screens.additem.navigateToAddItem
 import com.example.antiquecollector.ui.screens.home.homeScreen
 import com.example.antiquecollector.ui.screens.home.navigateToHome
 import com.example.antiquecollector.ui.screens.landing.LoadingDestination
@@ -62,8 +64,20 @@ fun AppRoute(modifier: Modifier = Modifier, onboardingPreferences: OnboardingPre
             onSearchClick = {
                 // navController.navigateToSearch()
             },
+            onNavigateToAddItem = {
+                navController.navigateToAddItem()
+            },
             currencyFormatter = CurrencyFormatter(),
             dateUtils = DateUtils(),
+        )
+
+        addItemScreen(
+            onSaveComplete = {
+
+            },
+            onNavigateUp = {
+                navController.navigateUp()
+            }
         )
     }
 }

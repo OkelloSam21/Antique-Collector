@@ -1,6 +1,7 @@
 package com.example.antiquecollector.data.local
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -19,6 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Provider
+import kotlin.math.log
 
 /**
  * The Room database for the Antique Collector application.
@@ -45,22 +47,33 @@ abstract class AppDatabase : RoomDatabase() {
      * Callback to populate the database with initial data.
      */
     class Callback @Inject constructor(
-        private val database: Provider<AppDatabase>,
         @ApplicationScope private val applicationScope: CoroutineScope
     ) : RoomDatabase.Callback() {
+
+        private lateinit var database: AppDatabase
+
+        fun setDatabase(db: AppDatabase) {
+            database = db
+        }
         
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
-            
+
+            Log.d("AppDatabase", "Database created, populating with default data")
             // Populate the database in the background
             applicationScope.launch {
                 populateDatabase()
+                Log.d("AppDatabase", "db populated successfully")
             }
         }
         
         private suspend fun populateDatabase() {
             // Add default categories
-            val categoryDao = database.get().categoryDao()
+            if (!::database.isInitialized) {
+                Log.d("AppDatabase", "Database initialized check")
+                return
+            }
+            val categoryDao = database.categoryDao()
             
             val defaultCategories = listOf(
                 CategoryEntity(name = "Furniture", iconName = "furniture", description = "Tables, chairs, cabinets, and other furniture items"),
@@ -82,7 +95,7 @@ abstract class AppDatabase : RoomDatabase() {
             }
             
             // Add default preferences
-            val preferenceDao = database.get().preferenceDao()
+            val preferenceDao = database.preferenceDao()
             
             val defaultPreferences = listOf(
                 UserPreferenceEntity(key = "currency", value = "USD"),
@@ -96,6 +109,7 @@ abstract class AppDatabase : RoomDatabase() {
             defaultPreferences.forEach { preference ->
                 preferenceDao.insertPreference(preference)
             }
+
         }
     }
 //
