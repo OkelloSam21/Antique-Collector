@@ -1,5 +1,6 @@
 package com.example.antiquecollector.ui.screens.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.antiquecollector.domain.model.Antique
@@ -37,13 +38,11 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun loadDashboardData() {
-        viewModelScope.launch {
+        _uiState.update { it.copy(isLoading = true) } // Set loading at the beginning
+        val initialStatsJob = viewModelScope.launch {
             try {
-                _uiState.update { it.copy(isLoading = true) }
-                
-                // Load collection statistics
                 antiqueUseCases.getCollectionStatisticsUseCase().collect { stats ->
-                    _uiState.update { 
+                    _uiState.update {
                         it.copy(
                             statistics = stats,
                             recentAntiques = stats.recentAdditions,
@@ -51,19 +50,37 @@ class HomeViewModel @Inject constructor(
                         )
                     }
                 }
-
-                // Load all categories
-                categoryUseCases.getCategories().collect { categories ->
-                    _uiState.update { it.copy(categories = categories) }
-                }
             } catch (e: Exception) {
-                _uiState.update { 
+                _uiState.update {
                     it.copy(
-                        isLoading = false,
-                        error = e.message ?: "An unexpected error occurred"
+                        error = e.message ?: "An unexpected error occurred loading statistics"
                     )
                 }
             }
+        }
+
+        val categoriesJob = viewModelScope.launch {
+            try {
+                categoryUseCases.getCategories().collect { categories ->
+                    Log.d("HomeViewModel", "Loaded categories: $categories")
+                    _uiState.update { it.copy(
+                        isLoading = false,categories = categories) }
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        error = e.message ?: "An unexpected error occurred loading categories",
+                        isLoading = false
+                    )
+                }
+            }
+        }
+
+        // Set isLoading to false after both initial stats and categories are loaded.
+        viewModelScope.launch {
+            initialStatsJob.join() // Wait for initial statistics load
+            categoriesJob.join()     // Wait for initial categories load
+            _uiState.update { it.copy(isLoading = false) } // Then set loading false
         }
     }
 
