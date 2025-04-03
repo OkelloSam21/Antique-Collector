@@ -1,6 +1,7 @@
 package com.example.antiquecollector.di
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Room
 import com.example.antiquecollector.data.local.AppDatabase
 import com.example.antiquecollector.data.local.dao.AntiqueDao
@@ -11,6 +12,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import javax.inject.Singleton
 
 @Module
@@ -20,7 +24,7 @@ object DatabaseModule {
     @Singleton
     @Provides
     fun provideCallBack(@ApplicationScope scope: CoroutineScope): AppDatabase.Callback{
-        return  AppDatabase.Callback(scope)
+        return AppDatabase.Callback(scope)
     }
 
     @Provides
