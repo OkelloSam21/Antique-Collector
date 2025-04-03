@@ -1,6 +1,8 @@
 package com.example.antiquecollector.ui.screens.settings
 
 import android.Manifest
+import android.app.Activity
+import android.app.AlarmManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -60,6 +62,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat
@@ -146,8 +149,7 @@ fun SettingsScreen(
                     icon = R.drawable.ic_notification,
                     title = "Push Notifications",
                     checked = uiState.pushNotifications,
-                    onCheckedChange = {
-                            enabled ->
+                    onCheckedChange = { enabled ->
                         if (enabled) {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                                 // Handle POST_NOTIFICATIONS for Android 13+
@@ -161,30 +163,28 @@ fun SettingsScreen(
                                 }
                             }
 
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-                                ContextCompat.checkSelfPermission(
-                                    context,
-                                    Manifest.permission.SCHEDULE_EXACT_ALARM
-                                ) != PackageManager.PERMISSION_GRANTED
-                            ) {
-
-                                // Need to request SCHEDULE_EXACT_ALARM
-                                // Show rationale if needed:
-                                if (shouldShowRequestPermissionRationale(
-                                        context as android.app.Activity,
-                                        Manifest.permission.SCHEDULE_EXACT_ALARM
-                                    )
-                                ) {
-                                    showExactAlarmRationale = true
-                                } else {
-                                    // If no rationale needed or user already saw it, go directly to settings:
-                                    launchExactAlarmPermissionSettings(context, exactAlarmPermissionLauncher)
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                                if (!alarmManager.canScheduleExactAlarms()) {
+                                    // Need to request SCHEDULE_EXACT_ALARM
+                                    // Show rationale if needed:
+                                    if (shouldShowRequestPermissionRationale(
+                                            context as Activity,
+                                            Manifest.permission.SCHEDULE_EXACT_ALARM
+                                        )
+                                    ) {
+                                        showExactAlarmRationale = true
+                                    } else {
+                                        // If no rationale needed or user already saw it, go directly to settings:
+                                        launchExactAlarmPermissionSettings(context, exactAlarmPermissionLauncher)
+                                    }
+                                    return@SwitchPreference
                                 }
-                            } else {
-                                // Either permission already granted, or below Android 12, so enable notifications & schedule immediately:
-                                viewModel.updatePushNotifications(enabled) // update view model and ui state
-                                NotificationHelper.scheduleDailyNotification(context) // schedule daily notifications
                             }
+                            // Either permission already granted, or below Android 12, so enable notifications & schedule immediately:
+                            viewModel.updatePushNotifications(enabled) // update view model and ui state
+                            NotificationHelper.scheduleDailyNotification(context) // schedule daily notifications
+
                         } else {
                             // User disabled notifications, cancel the scheduled notification:
                             viewModel.updatePushNotifications(enabled)
@@ -666,6 +666,7 @@ fun LocationPickerDialog(
     )
 }
 
+@Preview(showBackground = true)
 @Composable
 private fun SettingsScreenPrev() {
     AntiqueCollectorTheme {
