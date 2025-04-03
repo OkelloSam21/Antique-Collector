@@ -9,13 +9,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.example.antiquecollector.ui.screens.additem.addItemScreen
 import com.example.antiquecollector.ui.screens.additem.navigateToAddItem
+import com.example.antiquecollector.ui.screens.explore.explore
+import com.example.antiquecollector.ui.screens.explore.navigateToExplore
 import com.example.antiquecollector.ui.screens.home.homeScreen
 import com.example.antiquecollector.ui.screens.home.navigateToHome
+import com.example.antiquecollector.ui.screens.item.itemDetails
 import com.example.antiquecollector.ui.screens.landing.LoadingDestination
 import com.example.antiquecollector.ui.screens.landing.loadingScreen
 import com.example.antiquecollector.ui.screens.onboarding.OnboardingPreferences
 import com.example.antiquecollector.ui.screens.onboarding.navigateToOnboarding
 import com.example.antiquecollector.ui.screens.onboarding.onBoardingScreen
+import com.example.antiquecollector.ui.screens.settings.SettingsDestination
+import com.example.antiquecollector.ui.screens.settings.navigateToSettings
+import com.example.antiquecollector.ui.screens.settings.settings
 import com.example.antiquecollector.util.CurrencyFormatter
 import com.example.antiquecollector.util.DateUtils
 
@@ -56,10 +62,10 @@ fun AppRoute(modifier: Modifier = Modifier, onboardingPreferences: OnboardingPre
                 // navController.navigateToCategory(categoryId)
             },
             onNavigateToExplore = {
-                // navController.navigateToExplore()
+                 navController.navigateToExplore()
             },
             onNavigateToSettings = {
-                // navController.navigateToSettings()
+                 navController.navigateToSettings()
             },
             onSearchClick = {
                 // navController.navigateToSearch()
@@ -71,6 +77,12 @@ fun AppRoute(modifier: Modifier = Modifier, onboardingPreferences: OnboardingPre
             dateUtils = DateUtils(),
         )
 
+        settings(
+            onNavigateUp = {
+                navController.popBackStack()
+            }
+        )
+
         addItemScreen(
             onSaveComplete = {
 
@@ -79,5 +91,9 @@ fun AppRoute(modifier: Modifier = Modifier, onboardingPreferences: OnboardingPre
                 navController.navigateUp()
             }
         )
+
+        explore()
+
+        itemDetails()
     }
 }
