@@ -6,6 +6,7 @@ import androidx.room.Room
 import com.example.antiquecollector.data.local.AppDatabase
 import com.example.antiquecollector.data.local.dao.AntiqueDao
 import com.example.antiquecollector.data.local.dao.CategoryDao
+import com.example.antiquecollector.data.local.dao.PreferenceDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -56,5 +57,12 @@ object DatabaseModule {
     fun provideCategoryDao(appDatabase: AppDatabase): CategoryDao {
         return appDatabase.categoryDao()
     }
+
+    @Provides
+    @Singleton
+    fun providePreferenceDao(appDatabase: AppDatabase): PreferenceDao {
+        return appDatabase.preferenceDao()
+    }
+
 
 }
