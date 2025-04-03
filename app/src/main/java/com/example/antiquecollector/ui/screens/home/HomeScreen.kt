@@ -1,5 +1,6 @@
 package com.example.antiquecollector.ui.screens.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -246,20 +247,25 @@ private fun CollectionContent(
             fontWeight = FontWeight.Bold
         )
 
+        Log.d("HomeScreen", "Categories: ${uiState.categories}")
+
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.height((uiState.categories.size * 56).dp.coerceAtMost(350.dp))
+            modifier = Modifier.height((uiState.categories.size * 56).dp + 100.dp.coerceAtMost(350.dp))
         ) {
             items(uiState.categories) { category ->
+                Log.d("HomeScreen", "Category: $category")
                 CategoryCard(
                     category = category,
                     onCategoryClick = onCategoryClick
                 )
             }
         }
+
+        Spacer(modifier = Modifier.weight(1f))
 
         // Action buttons at the bottom
         Row(
@@ -377,6 +383,7 @@ fun CategoryCard(
     category: Category,
     onCategoryClick: (Long) -> Unit
 ) {
+    Log.d("CategoryCard", "Category: $category")
     Card(
         modifier = Modifier
             .fillMaxWidth()
