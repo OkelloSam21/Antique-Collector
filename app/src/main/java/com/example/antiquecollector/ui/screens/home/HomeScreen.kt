@@ -129,7 +129,7 @@ fun HomeScreen(
 @Composable
 private fun CollectionContent(
     paddingValues: PaddingValues,
-    uiState: HomedUiState,
+    uiState: HomeUiState,
     onAntiqueClick: (Long) -> Unit,
     onCategoryClick: (Long) -> Unit,
     onSearchClick: () -> Unit,

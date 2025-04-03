@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class HomedUiState(
+data class HomeUiState(
     val isLoading: Boolean = true,
     val statistics: CollectionStatistics = CollectionStatistics(),
     val categories: List<Category> = emptyList(),
@@ -30,8 +30,8 @@ class HomeViewModel @Inject constructor(
     private val categoryUseCases: CategoryUseCases
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(HomedUiState())
-    val uiState: StateFlow<HomedUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(HomeUiState())
+    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     init {
         loadDashboardData()
