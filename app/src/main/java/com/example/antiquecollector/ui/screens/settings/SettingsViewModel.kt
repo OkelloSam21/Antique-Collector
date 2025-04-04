@@ -1,5 +1,6 @@
 package com.example.antiquecollector.ui.screens.settings
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
@@ -71,6 +72,7 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    @SuppressLint("ScheduleExactAlarm")
     fun updatePushNotifications(enabled: Boolean) {
         viewModelScope.launch {
             preferenceRepository.setPreference("notification_push", enabled.toString())
