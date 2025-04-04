@@ -9,7 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.example.antiquecollector.ui.screens.additem.addItemScreen
 import com.example.antiquecollector.ui.screens.additem.navigateToAddItem
-import com.example.antiquecollector.ui.screens.explore.explore
+import com.example.antiquecollector.ui.screens.explore.exploreScreen
 import com.example.antiquecollector.ui.screens.explore.navigateToExplore
 import com.example.antiquecollector.ui.screens.home.homeScreen
 import com.example.antiquecollector.ui.screens.home.navigateToHome
@@ -19,7 +19,6 @@ import com.example.antiquecollector.ui.screens.landing.loadingScreen
 import com.example.antiquecollector.ui.screens.onboarding.OnboardingPreferences
 import com.example.antiquecollector.ui.screens.onboarding.navigateToOnboarding
 import com.example.antiquecollector.ui.screens.onboarding.onBoardingScreen
-import com.example.antiquecollector.ui.screens.settings.SettingsDestination
 import com.example.antiquecollector.ui.screens.settings.navigateToSettings
 import com.example.antiquecollector.ui.screens.settings.settings
 import com.example.antiquecollector.util.CurrencyFormatter
@@ -92,8 +91,11 @@ fun AppRoute(modifier: Modifier = Modifier, onboardingPreferences: OnboardingPre
             }
         )
 
-        explore()
-
+        exploreScreen(
+            onNavigateToDetail = {},
+            onNavigateToSearch = {},
+            onNavigateToCategory = {}
+        )
         itemDetails()
     }
 }
