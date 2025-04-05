@@ -16,7 +16,7 @@ interface AntiqueRepository {
     /**
      * Get a single antique by ID.
      */
-    suspend fun getAntiqueById(id: Long): Antique?
+    suspend fun getAntiqueById(id: String): Antique?
     
     /**
      * Get all antiques as a Flow.
@@ -31,7 +31,7 @@ interface AntiqueRepository {
     /**
      * Get antiques by category.
      */
-    fun getAntiquesByCategory(categoryId: Long): Flow<List<Antique>>
+    fun getAntiquesByCategory(categoryId: String): Flow<List<Antique>>
     
     /**
      * Get collection statistics.
@@ -66,7 +66,7 @@ interface CategoryRepository {
     /**
      * Get a single category by ID.
      */
-    suspend fun getCategoryById(id: Long): Category?
+    suspend fun getCategoryById(id: String): Category?
     
     /**
      * Get all categories as a Flow.

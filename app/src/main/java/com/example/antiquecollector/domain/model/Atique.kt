@@ -6,7 +6,7 @@ import java.util.Date
  * Domain model representing an antique item in the collection.
  */
 data class Antique(
-    val id: Long = 0,
+    val id: String = "",
     val name: String,
     val category: Category? = null,
     val acquisitionDate: Date,

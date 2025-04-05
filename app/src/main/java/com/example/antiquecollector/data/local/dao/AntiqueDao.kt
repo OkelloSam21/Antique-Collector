@@ -36,7 +36,7 @@ interface AntiqueDao {
     fun getRecentAntiques(limit: Int): Flow<List<AntiqueEntity>>
 
     @Query("SELECT * FROM antiques WHERE categoryId = :categoryId ORDER BY name ASC")
-    fun getAntiquesByCategory(categoryId: Long): Flow<List<AntiqueEntity>>
+    fun getAntiquesByCategory(categoryId: String): Flow<List<AntiqueEntity>>
 
     @Query("SELECT COUNT(*) FROM antiques")
     fun getAntiqueCount(): Flow<Int>
@@ -49,7 +49,7 @@ interface AntiqueDao {
 
     @Transaction
     @Query("SELECT * FROM antiques WHERE id = :id")
-    suspend fun getAntiqueWithCategory(id: Long): AntiqueWithCategory?
+    suspend fun getAntiqueWithCategory(id: String): AntiqueWithCategory?
 
     @Transaction
     @Query("SELECT * FROM antiques ORDER BY lastModified DESC")

@@ -11,7 +11,6 @@ import com.example.antiquecollector.domain.repository.AntiqueRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import java.util.Date
 import javax.inject.Inject
@@ -24,15 +23,15 @@ class AntiqueRepositoryImpl @Inject constructor(
     private val categoryDao: CategoryDao
 ) : AntiqueRepository {
     
-    override suspend fun getAntiqueById(id: Long): Antique? {
+    override suspend fun getAntiqueById(id: String): Antique? {
         val antiqueWithCategory = antiqueDao.getAntiqueWithCategory(id) ?: return null
         
         return Antique(
-            id = antiqueWithCategory.antique.id,
+            id = antiqueWithCategory.antique.id.toString(),
             name = antiqueWithCategory.antique.name,
             category = antiqueWithCategory.category?.let {
                 Category(
-                    id = it.id,
+                    id = it.id.toString(),
                     name = it.name,
                     iconName = it.iconName,
                     description = it.description
@@ -57,11 +56,11 @@ class AntiqueRepositoryImpl @Inject constructor(
         return antiqueDao.getAllAntiquesWithCategories().map { antiqueWithCategoryList ->
             antiqueWithCategoryList.map { antiqueWithCategory ->
                 Antique(
-                    id = antiqueWithCategory.antique.id,
+                    id = antiqueWithCategory.antique.id.toString(),
                     name = antiqueWithCategory.antique.name,
                     category = antiqueWithCategory.category?.let {
                         Category(
-                            id = it.id,
+                            id = it.id.toString(),
                             name = it.name,
                             iconName = it.iconName,
                             description = it.description
@@ -90,7 +89,7 @@ class AntiqueRepositoryImpl @Inject constructor(
                 // For recent antiques, we just need basic com.example.antiquecollector.ui.theme.helper.getInfo without categories
                 // This is more efficient than fetching the full relations
                 Antique(
-                    id = antiqueEntity.id,
+                    id = antiqueEntity.id.toString(),
                     name = antiqueEntity.name,
                     acquisitionDate = antiqueEntity.acquisitionDate,
                     currentValue = antiqueEntity.currentValue,
@@ -102,11 +101,11 @@ class AntiqueRepositoryImpl @Inject constructor(
         }
     }
     
-    override fun getAntiquesByCategory(categoryId: Long): Flow<List<Antique>> {
+    override fun getAntiquesByCategory(categoryId: String): Flow<List<Antique>> {
         return antiqueDao.getAntiquesByCategory(categoryId).map { antiqueEntities ->
             antiqueEntities.map { antiqueEntity ->
                 Antique(
-                    id = antiqueEntity.id,
+                    id = antiqueEntity.id.toString(),
                     name = antiqueEntity.name,
                     acquisitionDate = antiqueEntity.acquisitionDate,
                     currentValue = antiqueEntity.currentValue,
@@ -146,7 +145,7 @@ class AntiqueRepositoryImpl @Inject constructor(
                     val categoryEntity = allCategories.find { it.id == categoryId }
                     categoryEntity?.let {
                         Category(
-                            id = it.id,
+                            id = it.id.toString(),
                             name = it.name,
                             iconName = it.iconName,
                             description = it.description,
@@ -187,7 +186,7 @@ class AntiqueRepositoryImpl @Inject constructor(
     
     override suspend fun updateAntique(antique: Antique) {
         val antiqueEntity = AntiqueEntity(
-            id = antique.id,
+            id = antique.id.toLong(),
             name = antique.name,
             categoryId = antique.category?.id,
             acquisitionDate = antique.acquisitionDate,
@@ -208,7 +207,7 @@ class AntiqueRepositoryImpl @Inject constructor(
     
     override suspend fun deleteAntique(antique: Antique) {
         val antiqueEntity = AntiqueEntity(
-            id = antique.id,
+            id = antique.id.toLong(),
             name = antique.name,
             categoryId = antique.category?.id,
             acquisitionDate = antique.acquisitionDate,
@@ -231,7 +230,7 @@ class AntiqueRepositoryImpl @Inject constructor(
         return antiqueDao.searchAntiques(query).map { antiqueEntities ->
             antiqueEntities.map { antiqueEntity ->
                 Antique(
-                    id = antiqueEntity.id,
+                    id = antiqueEntity.id.toString(),
                     name = antiqueEntity.name,
                     acquisitionDate = antiqueEntity.acquisitionDate,
                     currentValue = antiqueEntity.currentValue,

@@ -5,6 +5,7 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.util.Date
+import java.util.UUID
 
 /**
  * Room database entity representing an antique item in the collection.
@@ -25,7 +26,7 @@ data class AntiqueEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val name: String,
-    val categoryId: Long?,
+    val categoryId: String?,
     val acquisitionDate: Date,
     val currentValue: Double,
     val condition: Int, // 1-5 rating
