@@ -25,110 +25,148 @@ class ExploreViewModel @Inject constructor(
     val uiState: StateFlow<ExploreUiState> = _uiState.asStateFlow()
 
     init {
-        loadFeaturedCollection()
-        loadPopularArtifacts()
-        loadCategories()
+        loadData()
     }
 
-    private fun loadFeaturedCollection() {
+    /**
+     * Load all data needed for the explore screen
+     */
+    private fun loadData() {
         viewModelScope.launch {
             try {
                 _uiState.update { it.copy(isLoading = true) }
 
-                // Load featured artifacts with period-specific queries
-                val featuredQueries = listOf(
-                    "greek vase",
-                    "egyptian statue",
-                    "roman sculpture"
-                )
-
-                val featuredArtifacts = mutableListOf<MuseumArtifact>()
-
-                for (query in featuredQueries) {
-                    val artifacts = museumUseCases.getMuseumArtifacts(query)
-                    if (artifacts.isNotEmpty()) {
-                        // Take just the first result for each query
-                        featuredArtifacts.add(artifacts.first())
-                    }
-
-                    // If we have enough featured artifacts, break
-                    if (featuredArtifacts.size >= 3) {
-                        break
-                    }
-                }
-
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        featuredArtifacts = featuredArtifacts
-                    )
-                }
+                // Launch data loading in parallel
+                launch { loadFeaturedCollection() }
+                launch { loadPopularArtifacts() }
+                launch { loadCategories() }
             } catch (e: Exception) {
+                Log.e("ExploreViewModel", "Error loading data", e)
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        error = e.message
+                        error = e.message ?: "An unexpected error occurred"
                     )
                 }
             }
         }
     }
 
-    private fun loadCategories(){
-        viewModelScope.launch {
-            try {
-                categoryUseCases.getCategories().collect { categories ->
-                    Log.d("HomeViewModel", "Loaded categories: $categories")
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false, categories = categories
-                        )
-                    }
+    /**
+     * Public method to refresh all data (used by pull-to-refresh)
+     */
+    fun refreshData() {
+        _uiState.update { it.copy(isRefreshing = true) }
+        loadData()
+    }
+
+    private suspend fun loadFeaturedCollection() {
+        try {
+            // Load featured artifacts with period-specific queries
+            val featuredQueries = listOf(
+                "greek vase",
+                "egyptian statue",
+                "roman sculpture"
+            )
+
+            val featuredArtifacts = mutableListOf<MuseumArtifact>()
+
+            for (query in featuredQueries) {
+                val artifacts = museumUseCases.getMuseumArtifacts(query)
+                if (artifacts.isNotEmpty()) {
+                    // Take just the first result for each query
+                    featuredArtifacts.add(artifacts.first())
                 }
-            } catch (e: Exception) {
-                _uiState.update {
-                    it.copy(
-                        error = e.message ?: "An unexpected error occurred loading categories",
-                        isLoading = false
-                    )
+
+                // If we have enough featured artifacts, break
+                if (featuredArtifacts.size >= 3) {
+                    break
                 }
+            }
+
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    isRefreshing = false,
+                    featuredArtifacts = featuredArtifacts
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("ExploreViewModel", "Error loading featured collection", e)
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    isRefreshing = false,
+                    error = e.message ?: "Failed to load featured collection"
+                )
             }
         }
     }
 
-    private fun loadPopularArtifacts() {
-        viewModelScope.launch {
-            try {
-                // Load popular artifacts with specific queries
-                val popularQueries = listOf(
-                    "bronze statue hellenistic",
-                    "roman amphora",
-                    "egyptian gold mask",
-                    "greek marble relief"
+    private suspend fun loadCategories() {
+        try {
+            categoryUseCases.getCategories().collect { categories ->
+                Log.d("ExploreViewModel", "Loaded categories: $categories")
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        isRefreshing = false,
+                        categories = categories
+                    )
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("ExploreViewModel", "Error loading categories", e)
+            _uiState.update {
+                it.copy(
+                    error = e.message ?: "An unexpected error occurred loading categories",
+                    isLoading = false,
+                    isRefreshing = false
                 )
+            }
+        }
+    }
 
-                val popularArtifacts = mutableListOf<MuseumArtifact>()
+    private suspend fun loadPopularArtifacts() {
+        try {
+            // Load popular artifacts with specific queries
+            val popularQueries = listOf(
+                "bronze statue hellenistic",
+                "roman amphora",
+                "egyptian gold mask",
+                "greek marble relief"
+            )
 
-                for (query in popularQueries) {
-                    val artifacts = museumUseCases.getMuseumArtifacts(query)
-                    if (artifacts.isNotEmpty()) {
-                        // Take just the first result for each query
-                        popularArtifacts.add(artifacts.first())
-                    }
+            val popularArtifacts = mutableListOf<MuseumArtifact>()
 
-                    // If we have enough popular artifacts, break
-                    if (popularArtifacts.size >= 4) {
-                        break
-                    }
+            for (query in popularQueries) {
+                val artifacts = museumUseCases.getMuseumArtifacts(query)
+                if (artifacts.isNotEmpty()) {
+                    // Take just the first result for each query
+                    popularArtifacts.add(artifacts.first())
                 }
 
-                _uiState.update {
-                    it.copy(popularArtifacts = popularArtifacts)
+                // If we have enough popular artifacts, break
+                if (popularArtifacts.size >= 4) {
+                    break
                 }
-            } catch (e: Exception) {
-                _uiState.update {
-                    it.copy(error = e.message)
-                }
+            }
+
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    isRefreshing = false,
+                    popularArtifacts = popularArtifacts
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("ExploreViewModel", "Error loading popular artifacts", e)
+            _uiState.update {
+                it.copy(
+                    error = e.message ?: "Failed to load popular artifacts",
+                    isLoading = false,
+                    isRefreshing = false
+                )
             }
         }
     }
@@ -153,8 +191,9 @@ class ExploreViewModel @Inject constructor(
 }
 
 data class ExploreUiState(
-    val categories : List<Category> = emptyList<Category>(),
+    val categories: List<Category> = emptyList(),
     val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false, // New state for pull-to-refresh
     val featuredArtifacts: List<MuseumArtifact> = emptyList(),
     val popularArtifacts: List<MuseumArtifact> = emptyList(),
     val error: String? = null

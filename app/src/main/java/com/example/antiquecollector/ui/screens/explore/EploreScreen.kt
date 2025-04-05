@@ -3,7 +3,18 @@ package com.example.antiquecollector.ui.screens.explore
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -11,9 +22,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +51,11 @@ import com.example.antiquecollector.R
 import com.example.antiquecollector.domain.model.Category
 import com.example.antiquecollector.domain.model.MuseumArtifact
 import com.example.antiquecollector.ui.components.CategoryIconMap
+import com.example.antiquecollector.ui.components.ShimmerCategoryItem
+import com.example.antiquecollector.ui.components.ShimmerFeaturedArtifactItem
+import com.example.antiquecollector.ui.components.ShimmerPopularArtifactItem
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
 fun ExploreScreen(
@@ -40,44 +65,60 @@ fun ExploreScreen(
     viewModel: ExploreViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = uiState.isRefreshing)
+    val coroutineScope = rememberCoroutineScope()
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF9F3E8)) // Cream background
+    // Update swipe refresh state when viewModel state changes
+    LaunchedEffect(uiState.isRefreshing) {
+        swipeRefreshState.isRefreshing = uiState.isRefreshing
+    }
+
+    SwipeRefresh(
+        state = swipeRefreshState,
+        onRefresh = { viewModel.refreshData() }
     ) {
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF9F3E8)) // Cream background
+        ) {
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
 
-            // Search Bar
-            SearchBar(
-                onSearchClick = onNavigateToSearch,
-                modifier = Modifier.padding(horizontal = 20.dp)
-            )
+                // Search Bar
+                SearchBar(
+                    onSearchClick = onNavigateToSearch,
+                    modifier = Modifier.padding(horizontal = 20.dp)
+                )
 
-            // Featured Collection
-            FeaturedCollectionSection(
-                featuredArtifacts = uiState.featuredArtifacts,
-                onArtifactClick = onNavigateToArtifactDetail
-            )
+                // Featured Collection
+                FeaturedCollectionSection(
+                    featuredArtifacts = uiState.featuredArtifacts,
+                    onArtifactClick = onNavigateToArtifactDetail,
+                    isLoading = uiState.isLoading
+                )
 
-            // Browse by Category
-            CategorySection(
-                onCategoryClick = onNavigateToCategory,
-                categories = uiState.categories
-            )
+                // Browse by Category
+                CategorySection(
+                    onCategoryClick = onNavigateToCategory,
+                    categories = uiState.categories,
+                    isLoading = uiState.isLoading
+                )
 
-            // Popular Artifacts
-            PopularArtifactsSection(
-                popularArtifacts = uiState.popularArtifacts,
-                onArtifactClick = onNavigateToArtifactDetail
-            )
+                // Popular Artifacts
+                PopularArtifactsSection(
+                    popularArtifacts = uiState.popularArtifacts,
+                    onArtifactClick = onNavigateToArtifactDetail,
+                    isLoading = uiState.isLoading
+                )
 
-            Spacer(modifier = Modifier.height(80.dp)) // Space for bottom navigation
+                Spacer(modifier = Modifier.height(80.dp))
+            }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBar(
     onSearchClick: () -> Unit,
@@ -98,12 +139,11 @@ fun SearchBar(
             )
         },
         enabled = false,
-        colors = TextFieldDefaults.colors().copy(
-//            disabledBorderColor = Color.LightGray,
-//            focusedBorderColor = Color.LightGray,
+        colors = TextFieldDefaults.colors(
             disabledTextColor = Color.Black,
             disabledPlaceholderColor = Color.Gray,
-            focusedContainerColor = Color.White
+            disabledContainerColor = Color.White,
+            disabledIndicatorColor = Color.LightGray
         ),
         shape = RoundedCornerShape(8.dp),
         singleLine = true
@@ -126,19 +166,31 @@ fun SectionTitle(title: String, modifier: Modifier = Modifier) {
 @Composable
 fun FeaturedCollectionSection(
     featuredArtifacts: List<MuseumArtifact>,
-    onArtifactClick: (String) -> Unit
+    onArtifactClick: (String) -> Unit,
+    isLoading: Boolean
 ) {
     SectionTitle(title = "Featured Collection")
 
-    LazyRow(
-        contentPadding = PaddingValues(horizontal = 20.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(featuredArtifacts) { artifact ->
-            FeaturedArtifactCard(
-                artifact = artifact,
-                onClick = { onArtifactClick(artifact.id) }
-            )
+    if (isLoading) {
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(3) { // Show 3 shimmer items
+                ShimmerFeaturedArtifactItem()
+            }
+        }
+    } else {
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(featuredArtifacts) { artifact ->
+                FeaturedArtifactCard(
+                    artifact = artifact,
+                    onClick = { onArtifactClick(artifact.id) }
+                )
+            }
         }
     }
 }
@@ -222,19 +274,31 @@ fun FeaturedArtifactCard(
 @Composable
 fun CategorySection(
     onCategoryClick: (Long) -> Unit,
-    categories: List<Category>
+    categories: List<Category>,
+    isLoading: Boolean
 ) {
     SectionTitle(title = "Browse by Category")
 
-    LazyRow(
-        contentPadding = PaddingValues(horizontal = 20.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(categories) { (iconRes, name, categoryId) ->
-            CategoryItem(
-                category = Category(iconRes, name, categoryId),
-                onCategoryClick = onCategoryClick
-            )
+    if (isLoading) {
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(5) { // Show 5 shimmer items
+                ShimmerCategoryItem()
+            }
+        }
+    } else {
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(categories) { category ->
+                CategoryItem(
+                    category = category,
+                    onCategoryClick = onCategoryClick
+                )
+            }
         }
     }
 }
@@ -248,7 +312,7 @@ fun CategoryItem(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .width(80.dp)
-            .clickable { onCategoryClick(category.id)}
+            .clickable { onCategoryClick(category.id.toLong()) }
     ) {
         Box(
             contentAlignment = Alignment.Center,
@@ -259,14 +323,14 @@ fun CategoryItem(
         ) {
             Icon(
                 painter = painterResource(id = CategoryIconMap.getIconRes(category.iconName)),
-                contentDescription = CategoryIconMap.getIconRes(category.name).toString(),
+                contentDescription = category.name,
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
             )
         }
 
         Text(
-            text = CategoryIconMap.getIconRes(category.name).toString(),
+            text = category.name,
             fontSize = 12.sp,
             fontWeight = FontWeight.Medium,
             modifier = Modifier.padding(top = 8.dp)
@@ -277,36 +341,59 @@ fun CategoryItem(
 @Composable
 fun PopularArtifactsSection(
     popularArtifacts: List<MuseumArtifact>,
-    onArtifactClick: (String) -> Unit
+    onArtifactClick: (String) -> Unit,
+    isLoading: Boolean
 ) {
     SectionTitle(title = "Popular Artifacts")
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier.padding(horizontal = 20.dp)
-    ) {
-        // Display popular artifacts in a grid (2 columns)
-        for (i in popularArtifacts.indices step 2) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                // First item in the row
-                PopularArtifactCard(
-                    artifact = popularArtifacts[i],
-                    onClick = { onArtifactClick(popularArtifacts[i].id) },
-                    modifier = Modifier.weight(1f)
-                )
-
-                // Second item in the row (if exists)
-                if (i + 1 < popularArtifacts.size) {
-                    PopularArtifactCard(
-                        artifact = popularArtifacts[i + 1],
-                        onClick = { onArtifactClick(popularArtifacts[i + 1].id) },
+    if (isLoading) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.padding(horizontal = 20.dp)
+        ) {
+            // Display shimmer in a grid (2 columns)
+            for (i in 0 until 2) { // 2 rows
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // First item in the row
+                    ShimmerPopularArtifactItem(
                         modifier = Modifier.weight(1f)
                     )
-                } else {
-                    // Empty space to maintain the grid
-                    Spacer(modifier = Modifier.weight(1f))
+
+                    // Second item in the row
+                    ShimmerPopularArtifactItem(
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        }
+    } else {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.padding(horizontal = 20.dp)
+        ) {
+            for (i in popularArtifacts.indices step 2) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // First item in the row
+                    PopularArtifactCard(
+                        artifact = popularArtifacts[i],
+                        onClick = { onArtifactClick(popularArtifacts[i].id) },
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    // Second item in the row (if exists)
+                    if (i + 1 < popularArtifacts.size) {
+                        PopularArtifactCard(
+                            artifact = popularArtifacts[i + 1],
+                            onClick = { onArtifactClick(popularArtifacts[i + 1].id) },
+                            modifier = Modifier.weight(1f)
+                        )
+                    } else {
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
                 }
             }
         }
