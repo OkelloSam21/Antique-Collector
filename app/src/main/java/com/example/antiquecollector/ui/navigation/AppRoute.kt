@@ -1,4 +1,4 @@
-package com.example.antiquecollector
+package com.example.antiquecollector.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -9,11 +9,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.example.antiquecollector.ui.screens.additem.addItemScreen
 import com.example.antiquecollector.ui.screens.additem.navigateToAddItem
+import com.example.antiquecollector.ui.screens.details.antiqueDetailScreen
+import com.example.antiquecollector.ui.screens.details.navigateToAntiqueDetail
 import com.example.antiquecollector.ui.screens.explore.exploreScreen
 import com.example.antiquecollector.ui.screens.explore.navigateToExplore
 import com.example.antiquecollector.ui.screens.home.homeScreen
 import com.example.antiquecollector.ui.screens.home.navigateToHome
-import com.example.antiquecollector.ui.screens.item.itemDetails
 import com.example.antiquecollector.ui.screens.landing.LoadingDestination
 import com.example.antiquecollector.ui.screens.landing.loadingScreen
 import com.example.antiquecollector.ui.screens.onboarding.OnboardingPreferences
@@ -56,6 +57,7 @@ fun AppRoute(modifier: Modifier = Modifier, onboardingPreferences: OnboardingPre
         homeScreen(
             onNavigateToDetail = { itemId ->
                 // navController.navigateToDetail(itemId)
+                navController.navigateToAntiqueDetail(itemId)
             },
             onNavigateToCategory = { categoryId ->
                 // navController.navigateToCategory(categoryId)
@@ -84,7 +86,7 @@ fun AppRoute(modifier: Modifier = Modifier, onboardingPreferences: OnboardingPre
 
         addItemScreen(
             onSaveComplete = {
-
+                navController.navigateToHome()
             },
             onNavigateUp = {
                 navController.navigateUp()
@@ -92,10 +94,21 @@ fun AppRoute(modifier: Modifier = Modifier, onboardingPreferences: OnboardingPre
         )
 
         exploreScreen(
-            onNavigateToDetail = {},
+            onNavigateToDetail = {
+                navController.navigateToAntiqueDetail(it)
+            },
             onNavigateToSearch = {},
             onNavigateToCategory = {}
         )
-        itemDetails()
+
+        antiqueDetailScreen(
+            onNavigateUp = {
+                navController.popBackStack()
+            },
+            onShareAntique = {},
+            onEditAntique = {
+                navController.navigateToAntiqueDetail(it)
+            }
+        )
     }
 }

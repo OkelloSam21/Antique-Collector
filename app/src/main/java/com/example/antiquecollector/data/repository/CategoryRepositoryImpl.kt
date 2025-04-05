@@ -15,11 +15,11 @@ class CategoryRepositoryImpl @Inject constructor(
     private val categoryDao: CategoryDao
 ) : CategoryRepository {
     
-    override suspend fun getCategoryById(id: Long): Category? {
-        val categoryEntity = categoryDao.getCategoryById(id) ?: return null
+    override suspend fun getCategoryById(id: String): Category? {
+        val categoryEntity = categoryDao.getCategoryById(id.toString()) ?: return null
         
         return Category(
-            id = categoryEntity.id,
+            id = categoryEntity.id.toString(),
             name = categoryEntity.name,
             iconName = categoryEntity.iconName,
             description = categoryEntity.description
@@ -30,7 +30,7 @@ class CategoryRepositoryImpl @Inject constructor(
         return categoryDao.getAllCategories().map { categoryEntities ->
             categoryEntities.map { categoryEntity ->
                 Category(
-                    id = categoryEntity.id,
+                    id = categoryEntity.id.toString(),
                     name = categoryEntity.name,
                     iconName = categoryEntity.iconName,
                     description = categoryEntity.description
@@ -50,7 +50,7 @@ class CategoryRepositoryImpl @Inject constructor(
     
     override suspend fun updateCategory(category: Category) {
         val categoryEntity = CategoryEntity(
-            id = category.id,
+            id = category.id.toLong(),
             name = category.name,
             iconName = category.iconName,
             description = category.description
@@ -60,7 +60,7 @@ class CategoryRepositoryImpl @Inject constructor(
     
     override suspend fun deleteCategory(category: Category) {
         val categoryEntity = CategoryEntity(
-            id = category.id,
+            id = category.id.toLong(),
             name = category.name,
             iconName = category.iconName,
             description = category.description

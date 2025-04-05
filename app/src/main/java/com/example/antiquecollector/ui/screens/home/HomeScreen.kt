@@ -46,7 +46,7 @@ import com.example.antiquecollector.util.DateUtils
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onNavigateToDetail: (Long) -> Unit,
+    onNavigateToDetail: (String) -> Unit,
     onNavigateToCategory: (Long) -> Unit,
     onNavigateToExplore: () -> Unit,
     onNavigateToSettings: () -> Unit,
@@ -130,7 +130,7 @@ fun HomeScreen(
 private fun CollectionContent(
     paddingValues: PaddingValues,
     uiState: HomeUiState,
-    onAntiqueClick: (Long) -> Unit,
+    onAntiqueClick: (String) -> Unit,
     onCategoryClick: (Long) -> Unit,
     onSearchClick: () -> Unit,
     onAddItemClick: () -> Unit,
@@ -157,14 +157,6 @@ private fun CollectionContent(
             enabled = false,
             shape = RoundedCornerShape(8.dp),
             colors = TextFieldDefaults.colors()
-//                TextFieldDefaults.colors(
-//                focusedPlaceholderColor = ,
-//                disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
-//                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-//                disabledLeadingIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-//                disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
-//                containerColor = MaterialTheme.colorScheme.surface
-//            )
         )
 
         // Collection Statistics
@@ -310,7 +302,7 @@ private fun CollectionContent(
 @Composable
 fun RecentAntiqueCard(
     antique: Antique,
-    onAntiqueClick: (Long) -> Unit,
+    onAntiqueClick: (String) -> Unit,
     currencyFormatter: CurrencyFormatter,
     dateUtils: DateUtils
 ) {
@@ -388,7 +380,7 @@ fun CategoryCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(100.dp)
-            .clickable { onCategoryClick(category.id) },
+            .clickable { onCategoryClick(category.id.toLong()) },
         shape = RoundedCornerShape(8.dp)
     ) {
         Row(

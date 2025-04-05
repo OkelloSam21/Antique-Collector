@@ -423,7 +423,7 @@ fun CategoryDropdown(
         ) {
             OutlinedTextField(
                 value = selectedCategoryId?.let { catId ->
-                    categories.find { it.id == catId }?.name ?: ""
+                    categories.find { it.id == catId.toString() }?.name ?: ""
                 } ?: "",
                 onValueChange = { /* Read only */ },
                 placeholder = { Text("Select category") },
@@ -461,7 +461,7 @@ fun CategoryDropdown(
                     DropdownMenuItem(
                         text = { Text(category.name) },
                         onClick = {
-                            onCategorySelected(category.id)
+                            onCategorySelected(category.id.toLong())
                             onExpandedChange(false)
                         }
                     )

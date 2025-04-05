@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
 data object HomeDestination
 
 fun NavGraphBuilder.homeScreen(
-    onNavigateToDetail: (Long) -> Unit,
+    onNavigateToDetail: (String) -> Unit,
     onNavigateToCategory: (Long) -> Unit,
     onNavigateToExplore: () -> Unit,
     onNavigateToSettings: () -> Unit,
