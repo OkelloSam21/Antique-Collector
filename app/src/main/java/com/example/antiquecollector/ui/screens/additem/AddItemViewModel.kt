@@ -103,7 +103,7 @@ class AddItemViewModel @Inject constructor(
 
         _isLoading.value = true
 
-        val category = _categories.value.find { it.id == currentState.categoryId }
+        val category = _categories.value.find { it.id == currentState.categoryId.toString() }
 
         val newAntique = Antique(
             name = currentState.name,
