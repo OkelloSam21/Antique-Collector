@@ -10,6 +10,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import com.example.antiquecollector.data.local.AppDatabase
+import com.example.antiquecollector.ui.navigation.AppRoute
 import com.example.antiquecollector.ui.screens.onboarding.OnboardingPreferences
 import com.example.antiquecollector.ui.theme.AntiqueCollectorTheme
 import com.example.antiquecollector.util.SplashScreenManager
