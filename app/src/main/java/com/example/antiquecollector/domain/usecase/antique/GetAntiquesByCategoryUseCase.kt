@@ -18,6 +18,6 @@ class GetAntiquesByCategoryUseCase @Inject constructor(
      * @return Flow of antiques in the specified category
      */
     operator fun invoke(categoryId: Long): Flow<List<Antique>> {
-        return repository.getAntiquesByCategory(categoryId)
+        return repository.getAntiquesByCategory(categoryId.toString())
     }
 }

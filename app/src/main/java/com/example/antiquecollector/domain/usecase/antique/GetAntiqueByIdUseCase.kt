@@ -17,7 +17,7 @@ class GetAntiqueByIdUseCase @Inject constructor(
      * @return The antique if found, or null if not found
      */
     suspend operator fun invoke(id: Long): Antique? {
-        return repository.getAntiqueById(id)
+        return repository.getAntiqueById(id.toString())
     }
 
 }

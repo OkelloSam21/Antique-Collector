@@ -11,6 +11,6 @@ data class CategoryEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val name: String,
-    val iconName: String?, // Name of the icon resource to use
+    val iconName: String?,
     val description: String?
 )
