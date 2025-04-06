@@ -1,5 +1,6 @@
 package com.example.antiquecollector
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -9,11 +10,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.example.antiquecollector.ui.screens.additem.addItemScreen
 import com.example.antiquecollector.ui.screens.additem.navigateToAddItem
+import com.example.antiquecollector.ui.screens.details.antiqueDetailScreen
+import com.example.antiquecollector.ui.screens.details.navigateToAntiqueDetail
 import com.example.antiquecollector.ui.screens.explore.exploreScreen
 import com.example.antiquecollector.ui.screens.explore.navigateToExplore
 import com.example.antiquecollector.ui.screens.home.homeScreen
 import com.example.antiquecollector.ui.screens.home.navigateToHome
 import com.example.antiquecollector.ui.screens.item.itemDetails
+import com.example.antiquecollector.ui.screens.item.navigateToItemDetails
 import com.example.antiquecollector.ui.screens.landing.LoadingDestination
 import com.example.antiquecollector.ui.screens.landing.loadingScreen
 import com.example.antiquecollector.ui.screens.onboarding.OnboardingPreferences
@@ -21,6 +25,7 @@ import com.example.antiquecollector.ui.screens.onboarding.navigateToOnboarding
 import com.example.antiquecollector.ui.screens.onboarding.onBoardingScreen
 import com.example.antiquecollector.ui.screens.settings.navigateToSettings
 import com.example.antiquecollector.ui.screens.settings.settings
+import com.example.antiquecollector.util.ArtifactId
 import com.example.antiquecollector.util.CurrencyFormatter
 import com.example.antiquecollector.util.DateUtils
 
@@ -55,7 +60,8 @@ fun AppRoute(modifier: Modifier = Modifier, onboardingPreferences: OnboardingPre
         // Home screen with various navigation callbacks
         homeScreen(
             onNavigateToDetail = { itemId ->
-                // navController.navigateToDetail(itemId)
+                Log.d("home screen navigation", "passed navigation argument Id is : $itemId")
+                 navController.navigateToAntiqueDetail(itemId)
             },
             onNavigateToCategory = { categoryId ->
                 // navController.navigateToCategory(categoryId)
@@ -92,10 +98,21 @@ fun AppRoute(modifier: Modifier = Modifier, onboardingPreferences: OnboardingPre
         )
 
         exploreScreen(
-            onNavigateToDetail = {},
+            onNavigateToDetail = {
+                navController.navigateToAntiqueDetail(it)
+            },
             onNavigateToSearch = {},
             onNavigateToCategory = {}
         )
-        itemDetails()
+
+        antiqueDetailScreen(
+            onNavigateUp = {
+                navController.navigateUp()
+            },
+            onEditAntique = {},
+            onShareAntique = {
+                // navController.navigateToShare(antiqueId)
+            }
+        )
     }
 }

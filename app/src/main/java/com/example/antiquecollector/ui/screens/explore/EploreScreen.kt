@@ -31,10 +31,11 @@ import com.example.antiquecollector.R
 import com.example.antiquecollector.domain.model.Category
 import com.example.antiquecollector.domain.model.MuseumArtifact
 import com.example.antiquecollector.ui.components.CategoryIconMap
+import com.example.antiquecollector.util.ArtifactId
 
 @Composable
 fun ExploreScreen(
-    onNavigateToArtifactDetail: (String) -> Unit,
+    onNavigateToArtifactDetail: (ArtifactId) -> Unit,
     onNavigateToSearch: () -> Unit,
     onNavigateToCategory: (Long) -> Unit,
     viewModel: ExploreViewModel = hiltViewModel()
@@ -126,7 +127,7 @@ fun SectionTitle(title: String, modifier: Modifier = Modifier) {
 @Composable
 fun FeaturedCollectionSection(
     featuredArtifacts: List<MuseumArtifact>,
-    onArtifactClick: (String) -> Unit
+    onArtifactClick: (ArtifactId) -> Unit
 ) {
     SectionTitle(title = "Featured Collection")
 
@@ -137,7 +138,7 @@ fun FeaturedCollectionSection(
         items(featuredArtifacts) { artifact ->
             FeaturedArtifactCard(
                 artifact = artifact,
-                onClick = { onArtifactClick(artifact.id) }
+                onClick = { onArtifactClick(ArtifactId.Remote(artifact.id)) }
             )
         }
     }
@@ -277,7 +278,7 @@ fun CategoryItem(
 @Composable
 fun PopularArtifactsSection(
     popularArtifacts: List<MuseumArtifact>,
-    onArtifactClick: (String) -> Unit
+    onArtifactClick: (ArtifactId) -> Unit
 ) {
     SectionTitle(title = "Popular Artifacts")
 
@@ -293,7 +294,7 @@ fun PopularArtifactsSection(
                 // First item in the row
                 PopularArtifactCard(
                     artifact = popularArtifacts[i],
-                    onClick = { onArtifactClick(popularArtifacts[i].id) },
+                    onClick = { onArtifactClick(ArtifactId.Remote(popularArtifacts[i].id)) },
                     modifier = Modifier.weight(1f)
                 )
 
@@ -301,7 +302,7 @@ fun PopularArtifactsSection(
                 if (i + 1 < popularArtifacts.size) {
                     PopularArtifactCard(
                         artifact = popularArtifacts[i + 1],
-                        onClick = { onArtifactClick(popularArtifacts[i + 1].id) },
+                        onClick = { onArtifactClick(ArtifactId.Remote(popularArtifacts[i].id)) },
                         modifier = Modifier.weight(1f)
                     )
                 } else {
@@ -316,12 +317,12 @@ fun PopularArtifactsSection(
 @Composable
 fun PopularArtifactCard(
     artifact: MuseumArtifact,
-    onClick: () -> Unit,
+    onClick: (ArtifactId) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
-            .clickable(onClick = onClick),
+            .clickable(onClick = {onClick(ArtifactId.Remote(artifact.id))}),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White

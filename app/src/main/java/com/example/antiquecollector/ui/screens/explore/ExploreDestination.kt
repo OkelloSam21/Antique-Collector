@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.antiquecollector.ui.screens.home.HomeDestination
+import com.example.antiquecollector.util.ArtifactId
 import kotlinx.serialization.Serializable
 
 // First, define the destination object
@@ -13,7 +14,7 @@ object ExploreDestination {
 
 // Then add the composable to your NavGraphBuilder
 fun NavGraphBuilder.exploreScreen(
-    onNavigateToDetail: (String) -> Unit,
+    onNavigateToDetail: (ArtifactId) -> Unit,
     onNavigateToSearch: () -> Unit,
     onNavigateToCategory: (Long) -> Unit
 ) {
