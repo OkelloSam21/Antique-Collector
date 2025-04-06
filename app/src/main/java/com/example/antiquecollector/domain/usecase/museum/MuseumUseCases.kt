@@ -8,5 +8,6 @@ import javax.inject.Inject
  */
 data class MuseumUseCases @Inject constructor(
     val getMuseumArtifacts: GetMuseumArtifactsUseCase,
-    val getSimilarMuseumArtifacts: GetSimilarMuseumArtifactsUseCase
+    val getSimilarMuseumArtifacts: GetSimilarMuseumArtifactsUseCase,
+    val getArtifactByIdUseCase: GetArtifactByIdUseCase
 )
