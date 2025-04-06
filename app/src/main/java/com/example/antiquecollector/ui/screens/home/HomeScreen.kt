@@ -40,13 +40,14 @@ import com.example.antiquecollector.domain.model.Category
 import com.example.antiquecollector.ui.components.CategoryIconMap
 import com.example.antiquecollector.ui.components.DonutChart
 import com.example.antiquecollector.ui.theme.AntiqueCollectorTheme
+import com.example.antiquecollector.util.ArtifactId
 import com.example.antiquecollector.util.CurrencyFormatter
 import com.example.antiquecollector.util.DateUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onNavigateToDetail: (Long) -> Unit,
+    onNavigateToDetail: (ArtifactId) -> Unit,
     onNavigateToCategory: (Long) -> Unit,
     onNavigateToExplore: () -> Unit,
     onNavigateToSettings: () -> Unit,
@@ -130,7 +131,7 @@ fun HomeScreen(
 private fun CollectionContent(
     paddingValues: PaddingValues,
     uiState: HomeUiState,
-    onAntiqueClick: (Long) -> Unit,
+    onAntiqueClick: (ArtifactId) -> Unit,
     onCategoryClick: (Long) -> Unit,
     onSearchClick: () -> Unit,
     onAddItemClick: () -> Unit,
@@ -157,14 +158,6 @@ private fun CollectionContent(
             enabled = false,
             shape = RoundedCornerShape(8.dp),
             colors = TextFieldDefaults.colors()
-//                TextFieldDefaults.colors(
-//                focusedPlaceholderColor = ,
-//                disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
-//                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-//                disabledLeadingIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-//                disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
-//                containerColor = MaterialTheme.colorScheme.surface
-//            )
         )
 
         // Collection Statistics
@@ -232,7 +225,9 @@ private fun CollectionContent(
             items(uiState.recentAntiques.take(5)) { antique ->
                 RecentAntiqueCard(
                     antique = antique,
-                    onAntiqueClick = onAntiqueClick,
+                    onAntiqueClick = {
+                        Log.d("Recent Addition click", "Recent addition click id is ${antique.id}")
+                        onAntiqueClick(ArtifactId.Local(antique.id))},
                     currencyFormatter = currencyFormatter,
                     dateUtils = dateUtils
                 )

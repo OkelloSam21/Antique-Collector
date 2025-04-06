@@ -3,6 +3,7 @@ package com.example.antiquecollector.ui.screens.home
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.example.antiquecollector.util.ArtifactId
 import com.example.antiquecollector.util.CurrencyFormatter
 import com.example.antiquecollector.util.DateUtils
 import kotlinx.serialization.Serializable
@@ -11,7 +12,7 @@ import kotlinx.serialization.Serializable
 data object HomeDestination
 
 fun NavGraphBuilder.homeScreen(
-    onNavigateToDetail: (Long) -> Unit,
+    onNavigateToDetail: (ArtifactId) -> Unit,
     onNavigateToCategory: (Long) -> Unit,
     onNavigateToExplore: () -> Unit,
     onNavigateToSettings: () -> Unit,
