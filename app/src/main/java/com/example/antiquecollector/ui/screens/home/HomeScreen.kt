@@ -43,6 +43,11 @@ import com.example.antiquecollector.ui.theme.AntiqueCollectorTheme
 import com.example.antiquecollector.util.ArtifactId
 import com.example.antiquecollector.util.CurrencyFormatter
 import com.example.antiquecollector.util.DateUtils
+import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,7 +56,6 @@ fun HomeScreen(
     onNavigateToCategory: (Long) -> Unit,
     onNavigateToExplore: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    onSearchClick: () -> Unit,
     onNavigateToAddItem: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
     currencyFormatter: CurrencyFormatter = CurrencyFormatter(),
@@ -85,19 +89,34 @@ fun HomeScreen(
                 NavigationBarItem(
                     selected = true,
                     onClick = { /* Already on Collection screen */ },
-                    icon = { Icon(painterResource(id = R.drawable.ic_art), contentDescription = "Collection") },
+                    icon = {
+                        Icon(
+                            painterResource(id = R.drawable.ic_art),
+                            contentDescription = "Collection"
+                        )
+                    },
                     label = { Text("Collection") }
                 )
                 NavigationBarItem(
                     selected = false,
                     onClick = { onNavigateToExplore() },
-                    icon = { Icon(painterResource(id = R.drawable.ic_explore), contentDescription = "Explore") },
+                    icon = {
+                        Icon(
+                            painterResource(id = R.drawable.ic_explore),
+                            contentDescription = "Explore"
+                        )
+                    },
                     label = { Text("Explore") }
                 )
                 NavigationBarItem(
                     selected = false,
                     onClick = onNavigateToSettings,
-                    icon = { Icon(painterResource(id = R.drawable.ic_settings), contentDescription = "Settings") },
+                    icon = {
+                        Icon(
+                            painterResource(id = R.drawable.ic_settings),
+                            contentDescription = "Settings"
+                        )
+                    },
                     label = { Text("Settings") }
                 )
             }
@@ -118,8 +137,9 @@ fun HomeScreen(
                 uiState = uiState,
                 onAntiqueClick = onNavigateToDetail,
                 onCategoryClick = onNavigateToCategory,
-                onSearchClick = onSearchClick,
+                onSearchQueryChange = viewModel::onSearchQueryChange,
                 onAddItemClick = onNavigateToAddItem,
+                setSearchActive = viewModel::setSearchActive,
                 currencyFormatter = currencyFormatter,
                 dateUtils = dateUtils
             )
@@ -127,14 +147,16 @@ fun HomeScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CollectionContent(
     paddingValues: PaddingValues,
     uiState: HomeUiState,
     onAntiqueClick: (ArtifactId) -> Unit,
     onCategoryClick: (Long) -> Unit,
-    onSearchClick: () -> Unit,
+    onSearchQueryChange: (String) -> Unit,
     onAddItemClick: () -> Unit,
+    setSearchActive: (Boolean) -> Unit,
     currencyFormatter: CurrencyFormatter,
     dateUtils: DateUtils
 ) {
@@ -146,19 +168,43 @@ private fun CollectionContent(
             .background(Color(0xFFF5F5F5))
     ) {
         // Search Box
-        OutlinedTextField(
-            value = "",
-            onValueChange = {},
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .clickable { onSearchClick() },
+        SearchBar(
+            query = uiState.searchQuery,
+            onQueryChange = { onSearchQueryChange(it) },
+            onSearch = { onSearchQueryChange(it) },
+            active = uiState.isSearchActive,
+            onActiveChange = { setSearchActive(it) },
             placeholder = { Text("Search your collection...") },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
-            enabled = false,
-            shape = RoundedCornerShape(8.dp),
-            colors = TextFieldDefaults.colors()
-        )
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            colors = SearchBarDefaults.colors(
+                containerColor = MaterialTheme.colorScheme.surface
+            )
+        ) {
+            // Search results
+            if (uiState.searchResults.isNotEmpty()) {
+                LazyColumn {
+                    items(uiState.searchResults) { antique ->
+                        AntiqueSearchResultItem(
+                            antique = antique,
+                            onAntiqueClick = { onAntiqueClick(ArtifactId.Local(antique.id)) },
+                            currencyFormatter = currencyFormatter
+                        )
+                    }
+                }
+            } else if (uiState.searchQuery.isNotEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("No results found for \"${uiState.searchQuery}\"")
+                }
+            }
+        }
 
         // Collection Statistics
         Card(
@@ -227,7 +273,8 @@ private fun CollectionContent(
                     antique = antique,
                     onAntiqueClick = {
                         Log.d("Recent Addition click", "Recent addition click id is ${antique.id}")
-                        onAntiqueClick(ArtifactId.Local(antique.id))},
+                        onAntiqueClick(ArtifactId.Local(antique.id))
+                    },
                     currencyFormatter = currencyFormatter,
                     dateUtils = dateUtils
                 )
@@ -243,6 +290,7 @@ private fun CollectionContent(
         )
 
         Log.d("HomeScreen", "Categories: ${uiState.categories}")
+
 
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
@@ -427,6 +475,52 @@ fun CategoryCard(
     }
 }
 
+@Composable
+private fun AntiqueSearchResultItem(
+    antique: Antique,
+    onAntiqueClick: () -> Unit,
+    currencyFormatter: CurrencyFormatter
+) {
+    ListItem(
+        headlineContent = { Text(antique.name) },
+        supportingContent = {
+            Text(
+                currencyFormatter.formatCurrency(antique.currentValue),
+                color = MaterialTheme.colorScheme.primary
+            )
+        },
+        leadingContent = {
+            if (antique.images.isNotEmpty()) {
+                AsyncImage(
+                    model = antique.images.first(),
+                    contentDescription = antique.name,
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clip(RoundedCornerShape(4.dp)),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .size(56.dp)
+                        .background(Color.Gray.copy(alpha = 0.3f), RoundedCornerShape(4.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.onboarding_track),
+                        contentDescription = null,
+                        tint = Color.Gray
+                    )
+                }
+            }
+        },
+        modifier = Modifier
+            .clickable(onClick = onAntiqueClick)
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 fun HomePreview(modifier: Modifier = Modifier) {
@@ -436,7 +530,6 @@ fun HomePreview(modifier: Modifier = Modifier) {
             onNavigateToCategory = {},
             onNavigateToExplore = {},
             onNavigateToSettings = {},
-            onSearchClick = {},
             onNavigateToAddItem = {},
             currencyFormatter = CurrencyFormatter(),
             dateUtils = DateUtils()

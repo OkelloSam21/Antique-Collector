@@ -21,6 +21,9 @@ data class HomeUiState(
     val statistics: CollectionStatistics = CollectionStatistics(),
     val categories: List<Category> = emptyList(),
     val recentAntiques: List<Antique> = emptyList(),
+    val searchQuery: String = "",
+    val isSearchActive: Boolean = false,
+    val searchResults: List<Antique> = emptyList(),
     val error: String? = null
 )
 
@@ -81,6 +84,27 @@ class HomeViewModel @Inject constructor(
             initialStatsJob.join() // Wait for initial statistics load
             categoriesJob.join()     // Wait for initial categories load
             _uiState.update { it.copy(isLoading = false) } // Then set loading false
+        }
+    }
+
+    fun onSearchQueryChange(query: String) {
+        _uiState.update { it.copy(searchQuery = query) }
+        if (query.isNotEmpty()) {
+            searchAntiques(query)
+        } else {
+            _uiState.update { it.copy(searchResults = emptyList()) }
+        }
+    }
+
+    fun setSearchActive(active: Boolean) {
+        _uiState.update { it.copy(isSearchActive = active) }
+    }
+
+    private fun searchAntiques(query: String) {
+        viewModelScope.launch {
+            antiqueUseCases.searchAntiquesUseCase(query).collect { antiques ->
+                _uiState.update { it.copy(searchResults = antiques) }
+            }
         }
     }
 

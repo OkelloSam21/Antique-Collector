@@ -16,22 +16,17 @@ fun NavGraphBuilder.homeScreen(
     onNavigateToCategory: (Long) -> Unit,
     onNavigateToExplore: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    onSearchClick: () -> Unit,
     onNavigateToAddItem: () -> Unit,
     currencyFormatter: CurrencyFormatter,
     dateUtils: DateUtils,
 ) {
-    composable<HomeDestination> { backStackEntry ->
-        // You might extract userId from the backStackEntry if needed
-        // val userId = backStackEntry.arguments?.getString("userId") ?: ""
+    composable<HomeDestination> {
         HomeScreen(
             onNavigateToDetail = onNavigateToDetail,
             onNavigateToCategory = onNavigateToCategory,
             onNavigateToExplore = onNavigateToExplore,
             onNavigateToSettings = onNavigateToSettings,
-            onSearchClick = onSearchClick,
             onNavigateToAddItem = onNavigateToAddItem,
-            //  viewModel = hiltViewModel(), // Directly get ViewModel here
             currencyFormatter = currencyFormatter,
             dateUtils = dateUtils,
         )
