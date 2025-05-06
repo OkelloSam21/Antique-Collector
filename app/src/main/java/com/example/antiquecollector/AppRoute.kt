@@ -16,8 +16,6 @@ import com.example.antiquecollector.ui.screens.explore.exploreScreen
 import com.example.antiquecollector.ui.screens.explore.navigateToExplore
 import com.example.antiquecollector.ui.screens.home.homeScreen
 import com.example.antiquecollector.ui.screens.home.navigateToHome
-import com.example.antiquecollector.ui.screens.item.itemDetails
-import com.example.antiquecollector.ui.screens.item.navigateToItemDetails
 import com.example.antiquecollector.ui.screens.landing.LoadingDestination
 import com.example.antiquecollector.ui.screens.landing.loadingScreen
 import com.example.antiquecollector.ui.screens.onboarding.OnboardingPreferences
@@ -25,7 +23,6 @@ import com.example.antiquecollector.ui.screens.onboarding.navigateToOnboarding
 import com.example.antiquecollector.ui.screens.onboarding.onBoardingScreen
 import com.example.antiquecollector.ui.screens.settings.navigateToSettings
 import com.example.antiquecollector.ui.screens.settings.settings
-import com.example.antiquecollector.util.ArtifactId
 import com.example.antiquecollector.util.CurrencyFormatter
 import com.example.antiquecollector.util.DateUtils
 
@@ -71,9 +68,6 @@ fun AppRoute(modifier: Modifier = Modifier, onboardingPreferences: OnboardingPre
             },
             onNavigateToSettings = {
                  navController.navigateToSettings()
-            },
-            onSearchClick = {
-                // navController.navigateToSearch()
             },
             onNavigateToAddItem = {
                 navController.navigateToAddItem()
