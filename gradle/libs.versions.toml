@@ -10,6 +10,7 @@ activityCompose = "1.10.1"
 composeBom = "2025.03.01"
 
 
+pagingCompose = "3.3.6"
 room = "2.6.1"
 ksp = "2.1.10-1.0.31"
 navigation = "2.8.9"
@@ -27,6 +28,8 @@ compose-extended-icons = "1.7.8"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingCompose" }
+androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "pagingCompose" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
