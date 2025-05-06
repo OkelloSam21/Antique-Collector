@@ -78,7 +78,8 @@ class SettingsViewModel @Inject constructor(
             preferenceRepository.setPreference("notification_push", enabled.toString())
             _uiState.update { it.copy(pushNotifications = enabled) }
             saveNotificationEnabledState(enabled)
-            // Schedule or cancel notifications based on the new setting
+
+            // Use the unified notification system
             if (enabled) {
                 NotificationHelper.scheduleDailyNotification(context)
             } else {
