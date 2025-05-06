@@ -21,8 +21,13 @@ import com.example.antiquecollector.ui.screens.landing.loadingScreen
 import com.example.antiquecollector.ui.screens.onboarding.OnboardingPreferences
 import com.example.antiquecollector.ui.screens.onboarding.navigateToOnboarding
 import com.example.antiquecollector.ui.screens.onboarding.onBoardingScreen
+import com.example.antiquecollector.ui.screens.search.navigateToLocalSearch
+import com.example.antiquecollector.ui.screens.search.navigateToRemoteSearch
+import com.example.antiquecollector.ui.screens.search.navigateToSearch
+import com.example.antiquecollector.ui.screens.search.searchScreen
 import com.example.antiquecollector.ui.screens.settings.navigateToSettings
 import com.example.antiquecollector.ui.screens.settings.settings
+import com.example.antiquecollector.util.ArtifactId
 import com.example.antiquecollector.util.CurrencyFormatter
 import com.example.antiquecollector.util.DateUtils
 
@@ -72,6 +77,9 @@ fun AppRoute(modifier: Modifier = Modifier, onboardingPreferences: OnboardingPre
             onNavigateToAddItem = {
                 navController.navigateToAddItem()
             },
+            onNavigateToSearch = {
+                 navController.navigateToLocalSearch()
+            },
             currencyFormatter = CurrencyFormatter(),
             dateUtils = DateUtils(),
         )
@@ -95,7 +103,9 @@ fun AppRoute(modifier: Modifier = Modifier, onboardingPreferences: OnboardingPre
             onNavigateToDetail = {
                 navController.navigateToAntiqueDetail(it)
             },
-            onNavigateToSearch = {},
+            onNavigateToSearch = {
+                navController.navigateToRemoteSearch()
+            },
             onNavigateToCategory = {}
         )
 
@@ -106,6 +116,16 @@ fun AppRoute(modifier: Modifier = Modifier, onboardingPreferences: OnboardingPre
             onEditAntique = {},
             onShareAntique = {
                 // navController.navigateToShare(antiqueId)
+            }
+        )
+
+        searchScreen(
+            onNavigateBack = { navController.navigateUp() },
+            onNavigateToArtifactDetail = { artifactId ->
+                when (artifactId) {
+                    is ArtifactId.Local -> navController.navigate("artifact/local/${artifactId.id}")
+                    is ArtifactId.Remote -> navController.navigate("artifact/remote/${artifactId.id}")
+                }
             }
         )
     }

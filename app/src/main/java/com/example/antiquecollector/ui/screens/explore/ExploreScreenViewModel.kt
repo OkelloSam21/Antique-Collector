@@ -150,12 +150,55 @@ class ExploreViewModel @Inject constructor(
     fun clearError() {
         _uiState.update { it.copy(error = null) }
     }
+
+    fun onSearchQueryChange(query: String) {
+        _uiState.update { it.copy(searchQuery = query) }
+        if (query.isNotEmpty()) {
+            searchArtifacts(query)
+        } else {
+            _uiState.update { it.copy(searchResults = emptyList()) }
+        }
+    }
+
+    fun setSearchActive(active: Boolean) {
+        _uiState.update { it.copy(isSearchActive = active) }
+        if (!active) {
+            // Clear search when closing search
+            _uiState.update { it.copy(searchQuery = "", searchResults = emptyList()) }
+        }
+    }
+
+    private fun searchArtifacts(query: String) {
+        viewModelScope.launch {
+            try {
+                _uiState.update { it.copy(isSearching = true) }
+                val artifacts = museumUseCases.searchArtifacts(query)
+                _uiState.update {
+                    it.copy(
+                        searchResults = artifacts,
+                        isSearching = false
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        error = "Error searching artifacts: ${e.message}",
+                        isSearching = false
+                    )
+                }
+            }
+        }
+    }
 }
 
 data class ExploreUiState(
-    val categories : List<Category> = emptyList<Category>(),
+    val categories: List<Category> = emptyList<Category>(),
     val isLoading: Boolean = false,
     val featuredArtifacts: List<MuseumArtifact> = emptyList(),
     val popularArtifacts: List<MuseumArtifact> = emptyList(),
+    val searchQuery: String = "",
+    val isSearchActive: Boolean = false,
+    val searchResults: List<MuseumArtifact> = emptyList(),
+    val isSearching: Boolean = false,
     val error: String? = null
 )

@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.antiquecollector.R
 import com.example.antiquecollector.domain.model.Category
@@ -51,28 +52,54 @@ fun ExploreScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Search Bar
-            SearchBar(
-                onSearchClick = onNavigateToSearch,
-                modifier = Modifier.padding(horizontal = 20.dp)
-            )
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .clickable { onNavigateToSearch() },
+                shape = RoundedCornerShape(28.dp),
+                color = MaterialTheme.colorScheme.surface,
+                tonalElevation = 2.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp, horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.Search,
+                        contentDescription = "Search",
+                        tint = Color.Gray
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        "Search your collection...",
+                        color = Color.Gray
+                    )
+                }
+            }
 
-            // Featured Collection
-            FeaturedCollectionSection(
-                featuredArtifacts = uiState.featuredArtifacts,
-                onArtifactClick = onNavigateToArtifactDetail
-            )
+            // Only show other content when search is not active
+            if (!uiState.isSearchActive) {
+                // Featured Collection
+                FeaturedCollectionSection(
+                    featuredArtifacts = uiState.featuredArtifacts,
+                    onArtifactClick = onNavigateToArtifactDetail
+                )
 
-            // Browse by Category
-            CategorySection(
-                onCategoryClick = onNavigateToCategory,
-                categories = uiState.categories
-            )
+                // Browse by Category
+                CategorySection(
+                    onCategoryClick = onNavigateToCategory,
+                    categories = uiState.categories
+                )
 
-            // Popular Artifacts
-            PopularArtifactsSection(
-                popularArtifacts = uiState.popularArtifacts,
-                onArtifactClick = onNavigateToArtifactDetail
-            )
+                // Popular Artifacts
+                PopularArtifactsSection(
+                    popularArtifacts = uiState.popularArtifacts,
+                    onArtifactClick = onNavigateToArtifactDetail
+                )
+            }
 
             Spacer(modifier = Modifier.height(80.dp)) // Space for bottom navigation
         }
@@ -80,34 +107,41 @@ fun ExploreScreen(
 }
 
 @Composable
-fun SearchBar(
-    onSearchClick: () -> Unit,
-    modifier: Modifier = Modifier
+fun ArtifactSearchResultItem(
+    artifact: MuseumArtifact,
+    onArtifactClick: () -> Unit
 ) {
-    OutlinedTextField(
-        value = "",
-        onValueChange = { },
-        placeholder = { Text("Search artifacts, periods, cultures...") },
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onSearchClick),
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Search",
-                tint = Color.Gray
+    ListItem(
+        headlineContent = { Text(artifact.title) },
+        supportingContent = {
+            val details = buildString {
+                if (!artifact.period.isNullOrBlank()) {
+                    append(artifact.period)
+                } else if (!artifact.objectDate.isNullOrBlank()) {
+                    append(artifact.objectDate)
+                }
+                if (!artifact.culture.isNullOrBlank()) {
+                    if (isNotEmpty() && !endsWith(", ")) append(", ")
+                    append(artifact.culture)
+                }
+            }
+            Text(details)
+        },
+        leadingContent = {
+            AsyncImage(
+                model = artifact.primaryImageUrl,
+                contentDescription = artifact.title,
+                error = painterResource(id = R.drawable.place_holder_image),
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(RoundedCornerShape(4.dp)),
+                contentScale = ContentScale.Crop
             )
         },
-        enabled = false,
-        colors = TextFieldDefaults.colors().copy(
-//            disabledBorderColor = Color.LightGray,
-//            focusedBorderColor = Color.LightGray,
-            disabledTextColor = Color.Black,
-            disabledPlaceholderColor = Color.Gray,
-            focusedContainerColor = Color.White
-        ),
-        shape = RoundedCornerShape(8.dp),
-        singleLine = true
+        modifier = Modifier
+            .clickable(onClick = onArtifactClick)
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     )
 }
 

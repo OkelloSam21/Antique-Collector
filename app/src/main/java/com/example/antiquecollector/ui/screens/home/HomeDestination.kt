@@ -3,6 +3,7 @@ package com.example.antiquecollector.ui.screens.home
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.example.antiquecollector.ui.screens.search.navigateToLocalSearch
 import com.example.antiquecollector.util.ArtifactId
 import com.example.antiquecollector.util.CurrencyFormatter
 import com.example.antiquecollector.util.DateUtils
@@ -17,6 +18,7 @@ fun NavGraphBuilder.homeScreen(
     onNavigateToExplore: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToAddItem: () -> Unit,
+    onNavigateToSearch: () -> Unit,
     currencyFormatter: CurrencyFormatter,
     dateUtils: DateUtils,
 ) {
@@ -27,6 +29,7 @@ fun NavGraphBuilder.homeScreen(
             onNavigateToExplore = onNavigateToExplore,
             onNavigateToSettings = onNavigateToSettings,
             onNavigateToAddItem = onNavigateToAddItem,
+            onNavigateToSearch = onNavigateToSearch,
             currencyFormatter = currencyFormatter,
             dateUtils = dateUtils,
         )
@@ -34,7 +37,7 @@ fun NavGraphBuilder.homeScreen(
 }
 
 fun NavController.navigateToHome() {
-    navigate(HomeDestination) {  // Pass userId when navigating
+    navigate(HomeDestination) {
         popUpTo(0) {
             inclusive = true
         }

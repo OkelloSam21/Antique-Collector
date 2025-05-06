@@ -18,6 +18,7 @@ import com.example.antiquecollector.domain.usecase.museum.MuseumUseCases
 import com.example.antiquecollector.domain.usecase.antique.SearchAntiquesUseCase
 import com.example.antiquecollector.domain.usecase.antique.UpdateAntiqueUseCase
 import com.example.antiquecollector.domain.usecase.museum.GetArtifactByIdUseCase
+import com.example.antiquecollector.domain.usecase.museum.SearchArtifactsUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -140,12 +141,14 @@ object UseCaseModule {
     fun provideMuseumUseCases(
         getMuseumArtifactsUseCase: GetMuseumArtifactsUseCase,
         getSimilarMuseumArtifactsUseCase: GetSimilarMuseumArtifactsUseCase,
-        getArtifactByIdUseCase: GetArtifactByIdUseCase
+        getArtifactByIdUseCase: GetArtifactByIdUseCase,
+        searchArtifactsUseCase: SearchArtifactsUseCase
     ): MuseumUseCases {
         return MuseumUseCases(
             getMuseumArtifactsUseCase,
             getSimilarMuseumArtifactsUseCase,
-            getArtifactByIdUseCase
+            getArtifactByIdUseCase,
+            searchArtifactsUseCase,
         )
     }
 }

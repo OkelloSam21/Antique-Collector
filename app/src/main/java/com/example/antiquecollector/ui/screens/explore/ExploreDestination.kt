@@ -7,12 +7,10 @@ import com.example.antiquecollector.ui.screens.home.HomeDestination
 import com.example.antiquecollector.util.ArtifactId
 import kotlinx.serialization.Serializable
 
-// First, define the destination object
 object ExploreDestination {
     const val route = "explore"
 }
 
-// Then add the composable to your NavGraphBuilder
 fun NavGraphBuilder.exploreScreen(
     onNavigateToDetail: (ArtifactId) -> Unit,
     onNavigateToSearch: () -> Unit,
@@ -27,12 +25,9 @@ fun NavGraphBuilder.exploreScreen(
     }
 }
 
-// Add helper extension function for navigation
 fun NavController.navigateToExplore() {
     this.navigate(ExploreDestination.route) {
-        // Optional: Pop up to the home route to avoid building up a large stack
         popUpTo(HomeDestination)
-        // Optional: Set other navigation options like launchSingleTop
         launchSingleTop = true
     }
 }
